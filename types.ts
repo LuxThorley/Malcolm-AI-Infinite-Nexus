@@ -12,12 +12,6 @@ export interface Message {
     url: string; // data URL for display
     type: string; // MIME type
   };
-  error?: boolean;
-  actionCard?: {
-    type: string;
-    title: string;
-    data: Record<string, string>;
-  };
 }
 
 export interface Conversation {
@@ -25,13 +19,4 @@ export interface Conversation {
   title: string;
   createdAt: number;
   messages: Message[];
-}
-
-export interface CommandAction {
-  id: string;
-  name: string;
-  description: string;
-  icon: React.FC<{ className?: string }>;
-  action: () => void;
-  section: 'Actions' | 'Navigation' | 'Suggestions';
 }

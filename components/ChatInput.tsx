@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { SendIcon, PaperclipIcon, MicrophoneIcon, StopCircleIcon } from './Icons';
+import { SendIcon, PaperclipIcon, MicrophoneIcon } from './Icons';
 
 // FIX: Add type declarations for Web Speech API to resolve TypeScript errors.
 interface SpeechRecognitionResult {
@@ -53,7 +53,6 @@ interface ChatInputProps {
   setInput: (value: string) => void;
   onSendMessage: () => void;
   isLoading: boolean;
-  onStop: () => void;
   file: File | null;
   setFile: (file: File | null) => void;
 }
@@ -66,7 +65,7 @@ if (recognition) {
 }
 
 
-export const ChatInput: React.FC<ChatInputProps> = ({ input, setInput, onSendMessage, isLoading, onStop, file, setFile }) => {
+export const ChatInput: React.FC<ChatInputProps> = ({ input, setInput, onSendMessage, isLoading, file, setFile }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [filePreview, setFilePreview] = useState<string | null>(null);
@@ -167,7 +166,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ input, setInput, onSendMes
   };
 
   return (
-    <div className="bg-transparent px-4 pb-4">
+    <div className="bg-slate-100 dark:bg-slate-800 p-4 border-t border-slate-200 dark:border-slate-700">
        <input
             type="file"
             ref={fileInputRef}
@@ -175,9 +174,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({ input, setInput, onSendMes
             className="hidden"
             accept="image/*, video/*, audio/*"
         />
-      <div className="max-w-4xl mx-auto bg-slate-200/30 dark:bg-slate-900/30 backdrop-blur-lg border border-white/10 dark:border-white/5 rounded-2xl p-2 shadow-2xl shadow-black/20">
+      <div className="max-w-4xl mx-auto">
          {filePreview && (
-          <div className="mb-2 p-2 bg-black/10 dark:bg-black/20 rounded-lg relative w-fit">
+          <div className="mb-2 p-2 bg-slate-200/50 dark:bg-slate-700/50 rounded-lg relative w-fit">
             {file?.type.startsWith('image/') && filePreview !== 'file' && (
               <img src={filePreview} alt="Preview" className="max-h-24 rounded-md" />
             )}
@@ -189,7 +188,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ input, setInput, onSendMes
             )}
             <button
               onClick={handleRemoveFile}
-              className="absolute -top-2 -right-2 bg-slate-500 dark:bg-slate-800 rounded-full h-6 w-6 flex items-center justify-center text-white hover:bg-slate-400 dark:hover:bg-slate-600 transition-colors border border-white/10"
+              className="absolute -top-2 -right-2 bg-slate-500 dark:bg-slate-600 rounded-full h-6 w-6 flex items-center justify-center text-white hover:bg-slate-400 dark:hover:bg-slate-500 transition-colors"
               aria-label="Remove file"
             >
               &times;
@@ -197,56 +196,46 @@ export const ChatInput: React.FC<ChatInputProps> = ({ input, setInput, onSendMes
           </div>
         )}
         <div className="relative flex items-center">
-            {isLoading ? (
-                <div className="w-full flex flex-col items-center justify-center p-3 h-[52px]">
-                    <button onClick={onStop} className="flex items-center space-x-2 px-4 py-2 border border-white/20 rounded-lg text-slate-300 bg-white/5 hover:bg-white/10 transition-colors">
-                        <StopCircleIcon className="h-5 w-5"/>
-                        <span>Stop generating</span>
-                    </button>
-                </div>
-            ) : (
-                <>
-                <textarea
-                    ref={textareaRef}
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Message Malcolm AI..."
-                    rows={1}
-                    className="w-full bg-transparent text-slate-800 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 rounded-lg py-3 pl-12 pr-28 resize-none focus:ring-2 focus:ring-purple-500/50 focus:outline-none transition-shadow duration-300 shadow-inner dark:shadow-black/50"
-                    disabled={isListening}
-                />
-                <div className="absolute left-2 flex items-center">
-                    <button
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={isListening}
-                        className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:text-purple-500 dark:hover:text-purple-400 hover:bg-white/20 dark:hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
-                        aria-label="Attach file"
-                    >
-                        <PaperclipIcon className="h-5 w-5" />
-                    </button>
-                </div>
-                <div className="absolute right-3 flex items-center">
-                    {recognition && (
-                    <button
-                        onClick={handleMicClick}
-                        className={`p-2 rounded-full text-slate-500 dark:text-slate-400 hover:text-purple-500 dark:hover:text-purple-400 hover:bg-white/20 dark:hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50 transition-colors ${isListening ? 'text-pink-500 animate-pulse' : ''}`}
-                        aria-label={isListening ? 'Stop listening' : 'Start listening'}
-                    >
-                        <MicrophoneIcon className="h-5 w-5" />
-                    </button>
-                    )}
-                    <button
-                    onClick={onSendMessage}
-                    disabled={!input.trim() && !file}
-                    className="ml-2 p-3 rounded-full text-white bg-gradient-to-br from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 disabled:from-slate-400 disabled:to-slate-500 dark:disabled:from-slate-600 dark:disabled:to-slate-700 disabled:cursor-not-allowed transition-all duration-300 transform enabled:hover:scale-110 shadow-lg enabled:hover:shadow-purple-500/50"
-                    aria-label="Send message"
-                    >
-                    <SendIcon className="h-5 w-5" />
-                    </button>
-                </div>
-                </>
+          <textarea
+            ref={textareaRef}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Message Malcolm AI..."
+            rows={1}
+            className="w-full bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 placeholder-slate-500 dark:placeholder-slate-400 rounded-lg py-3 pl-12 pr-24 resize-none focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-shadow"
+            disabled={isLoading || isListening}
+          />
+           <div className="absolute left-2 flex items-center">
+             <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isLoading || isListening}
+                className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-300/50 dark:hover:bg-slate-600/50 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
+                aria-label="Attach file"
+             >
+                <PaperclipIcon className="h-5 w-5" />
+             </button>
+           </div>
+          <div className="absolute right-3 flex items-center">
+            {recognition && (
+              <button
+                onClick={handleMicClick}
+                disabled={isLoading}
+                className={`p-2 rounded-full text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-300/50 dark:hover:bg-slate-600/50 disabled:cursor-not-allowed disabled:opacity-50 transition-colors ${isListening ? 'text-red-500 animate-pulse' : ''}`}
+                aria-label={isListening ? 'Stop listening' : 'Start listening'}
+              >
+                <MicrophoneIcon className="h-5 w-5" />
+              </button>
             )}
+            <button
+              onClick={onSendMessage}
+              disabled={isLoading || (!input.trim() && !file)}
+              className="ml-2 p-2 rounded-full text-slate-100 dark:text-slate-300 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-400 dark:disabled:bg-slate-600 disabled:cursor-not-allowed transition-colors"
+              aria-label="Send message"
+            >
+              <SendIcon className="h-5 w-5" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
