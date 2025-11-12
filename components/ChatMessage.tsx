@@ -1,4 +1,5 @@
 
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Role, Message } from '../types';
 import { MalcolmIcon, UserIcon, CopyIcon, CheckIcon, RefreshCwIcon, AlertTriangleIcon, CpuIcon } from './Icons';
@@ -142,12 +143,12 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isLastMessage
       </div>
       
       <div className={`flex-1 overflow-hidden p-4 rounded-xl shadow-lg ${isUserModel 
-          ? 'bg-gradient-to-br from-indigo-700/40 to-indigo-800/20 rounded-br-none border border-indigo-500/30 text-slate-100' 
+          ? 'bg-gradient-to-br from-indigo-700/40 to-indigo-800/20 rounded-br-none border border-indigo-500/30 text-white' 
           : 'bg-gradient-to-br from-slate-800/40 to-slate-900/20 rounded-bl-none border border-slate-700/30'}`
       }>
         <p className={`font-semibold ${isUserModel ? 'text-indigo-300' : 'text-purple-300'}`}>{isUserModel ? 'You' : 'Malcolm AI'}</p>
         {renderFile()}
-        <div className="prose prose-sm prose-slate dark:prose-invert prose-p:text-slate-300 dark:prose-p:text-slate-200 max-w-none pt-1">
+        <div className="prose prose-sm prose-slate dark:prose-invert prose-p:text-slate-300 dark:prose-p:text-slate-100 max-w-none pt-1">
            {renderContent()}
         </div>
         {!isUserModel && <ActionCard card={message.actionCard} />}
